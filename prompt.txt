@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECHO DORMITORY - Some echoes don't fade</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;700&family=Noto+Serif+JP:wght@300;600&display=swap');
+
+        :root {
+            --bg-color: #0a0a0c;
+            --text-color: #e6e6e8;
+            --accent-color: #596acf;
+            --shadow-color: rgba(89, 106, 207, 0.4);
+            --hover-color: #8796e0;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Crimson Pro', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .main-title {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: var(--accent-color);
+            text-align: center;
+            text-shadow: 0 0 15px var(--shadow-color);
+            z-index: 100;
+            width: 100%;
+            transition: opacity 1s ease;
+            opacity: 1;
+            font-family: 'Noto Serif JP', serif;
+            letter-spacing: 2px;
+        }
+
+        .tagline {
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: var(--text-color);
+            text-align: center;
+            opacity: 0.8;
+            z-index: 100;
+            width: 100%;
+            font-style: italic;
+            transition: opacity 1s ease;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+            box-sizing: border-box;
+            margin-top: -10vh;
+            padding-top: 10vh;
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s, transform 1s;
+        }
+
+        .episode-content {
+            flex: 1;
+            max-width: 50%;
+            padding: 2rem;
+            background-color: rgba(10, 10, 12, 0.7);
+            border: 1px solid var(--accent-color);
+            text-align: left;
+            box-shadow: 0 0 30px var(--shadow-color);
+            backdrop-filter: blur(8px);
+        }
+
+        .episode-image {
+            flex: 1;
+            max-width: 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .dynamic-image {
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 1s, transform 1s;
+            filter: grayscale(30%) brightness(80%);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .episode-number {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        h2 {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 2.2rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 3px var(--shadow-color);
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/png;base64,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');
+            opacity: 0.05;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .static-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 10, 12, 0.8);
+            z-index: 15;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ghost {
+            position: fixed;
+            width: 120px;
+            height: 180px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 10;
+            filter: grayscale(50%) blur(1px);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--accent-color);
+            z-index: 1000;
+            box-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background-color: rgba(10, 10, 12, 0.7);
+            padding: 10px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .control-checkbox {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--accent-color);
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .control-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 2px;
+            left: 2px;
+            background-color: var(--accent-color);
+            border-radius: 1px;
+        }
+
+        .control-button {
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Crimson Pro', serif;
+            transition: background-color 0.3s;
+        }
+
+        .control-button:hover {
+            background-color: rgba(89, 106, 207, 0.2);
+        }
+
+        .audio-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-slider {
+            width: 60px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(230, 230, 232, 0.3);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .knocking-sound {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.3s;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(89, 106, 207, 0.3);
+        }
+
+        .knocking-sound:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .mirror-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(89, 106, 207, 0.05) 0%, rgba(10, 10, 12, 0) 100%);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 5;
+            transition: opacity 0.5s;
+        }
+
+        .title-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .journal-page {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #f2eecb;
+            color: #333;
+            padding: 20px;
+            width: 300px;
+            height: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: transform 1s;
+            font-family: 'Crimson Pro', serif;
+            opacity: 0;
+        }
+
+        .journal-content {
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        @keyframes flickerAnimation {
+            0%   { opacity: 0; }
+            5%   { opacity: 0.2; }
+            10%  { opacity: 0; }
+            15%  { opacity: 0.1; }
+            20%  { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .flicker {
+            animation: flickerAnimation 0.5s forwards;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .episode-content, .episode-image {
+                max-width: 100%;
+            }
+
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .tagline {
+                font-size: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    <div class="ghost"></div>
+    <div class="static-effect"></div>
+    <div class="mirror-effect"></div>
+    <div class="noise-overlay"></div>
+
+    <div class="title-section" id="title-section">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1630699144867-37acec97df5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'); opacity: 1;"></div>
+        <h1 class="main-title">🌑 ECHO DORMITORY</h1>
+        <div class="tagline">Some echoes don't fade. They wait to be heard.</div>
+    </div>
+
+    <div class="section" id="episode1">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-content">
+                <div class="episode-number">Episode 1</div>
+                <h2>Arrival</h2>
+                <p>Akari transfers to Kagura Academy and is placed in the rarely-used Echo Dormitory. The building is cold, oddly silent, and the air feels heavier than it should. Her roommate never arrives. That night, she hears a knock from the inside of her closet—twice.</p>
+            </div>
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1588599037677-c8f04fb6401b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" alt="Echo Dormitory" class="dynamic-image">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode2">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1536965764833-5971e0abed7c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1935&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1935&q=80" alt="Names That Vanish" class="dynamic-image">
+            </div>
+            <div class="episode-content">
+                <div class="episode-number">Episode 2</div>
+                <h2>Names That Vanish</h2>
+                <p>She meets other dorm residents: reserved, distracted, and strangely forgetful. A student named Yui shares dinner with them—but the next morning, no one remembers her. Her room is empty. Only Akari remembers… and finds Yui's schoolbook under her own bed.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode3">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1626556312730-3adb8f08549f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-content">
+                <div class="episode-number">Episode 3</div>
+                <h2>Reflections</h2>
+                <p>Mirrors start acting strangely—reflecting people who aren't there, sometimes lagging behind real movement. Akari glimpses a boy watching her through the mirror. He vanishes the moment she blinks. Her reflection continues to smile even when she stops.</p>
+            </div>
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1613384182507-beab7af63c33?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Reflections" class="dynamic-image">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode4">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1509822929063-6b6cfc9b42f2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1621839673705-6617adf9e890?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80" alt="Rule of Two" class="dynamic-image">
+            </div>
+            <div class="episode-content">
+                <div class="episode-number">Episode 4</div>
+                <h2>Rule of Two</h2>
+                <p>Itsuki tells her an old dorm rule: If the knock comes more than twice, don't open the door. That night, someone knocks on every door in the hallway—three times. A student breaks the rule. In the morning, their door is sealed shut. No one remembers them.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode5">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-content">
+                <div class="episode-number">Episode 5</div>
+                <h2>Echo Photo</h2>
+                <p>Akari finds a yearbook tucked under a loose floorboard. Five students' faces are scribbled out. In the same place, she uncovers a dusty photo: the current dorm residents, including herself—but there's one extra person in the picture. A girl no one recognizes. Not even Akari.</p>
+            </div>
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1472457897821-70d3819a0e24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" alt="Echo Photo" class="dynamic-image">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode6">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1635321593217-40050ad13c74?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1924&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1508343526072-3be32bab2039?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="The Basement Class" class="dynamic-image">
+            </div>
+            <div class="episode-content">
+                <div class="episode-number">Episode 6</div>
+                <h2>The Basement Class</h2>
+                <p>Following a distorted map drawn in the back of the yearbook, Akari and Itsuki find a sealed staircase leading to the old basement. They discover a forgotten classroom—dusty desks, broken glass, and lifelike mannequins seated like students. One of them wears Yui's scarf.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode7">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1533240332313-0db49b459ad6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-content">
+                <div class="episode-number">Episode 7</div>
+                <h2>Rewind</h2>
+                <p>Sayaka confesses: the dorm resets time. She's lived this week seven times and always ends up alone. Her memories of the outside world are crumbling. Her last cycle ended with her reflection pulling her through the mirror. This time, she wants to change the ending.</p>
+            </div>
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1494475673543-6a6a27143fc8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Rewind" class="dynamic-image">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode8">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wY">
+            <div class="background" style="background-image: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1568749660009-eb8b4383f7f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="The Sixth" class="dynamic-image">
+            </div>
+            <div class="episode-content">
+                <div class="episode-number">Episode 8</div>
+                <h2>The Sixth</h2>
+                <p>Akari's visions intensify. Flashbacks return—her younger self, in Echo Dorm, laughing with five other students. Her mother's face blurs. She realizes she's not new to this dorm. She was the sixth student from the original incident. But why did she forget?</p>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode9">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1518544866330-1c6f3a96ce7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-content">
+                <div class="episode-number">Episode 9</div>
+                <h2>Static Silence</h2>
+                <p>Voices in the dorm begin overlapping—whispers from forgotten students calling out. The building starts to shift: stairs go nowhere, windows show static, and walls bleed old memories. The Mirror Boy reveals the dorm protects lost souls—those who weren't remembered. Akari must choose: leave… or stay and remember them all.</p>
+            </div>
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1518893883800-45cd0954574b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Static Silence" class="dynamic-image">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="episode10">
+        <div class="background" style="background-image: url('https://images.unsplash.com/photo-1534329539061-64caeb388c42?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+        <div class="content-wrapper">
+            <div class="episode-image">
+                <img src="https://images.unsplash.com/photo-1519074069044-f74fcf1f2310?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="The Last Echo" class="dynamic-image">
+            </div>
+            <div class="episode-content">
+                <div class="episode-number">Episode 10</div>
+                <h2>The Last Echo</h2>
+                <p>To escape, Akari must give up her final memory of her real life—her mother's face. As she prepares to leave, darkness consumes the dorm. Reality shifts and cracks. Was she ever Akari at all? The journal pages flutter in an unseen wind, names appearing and disappearing. When morning comes, the dorm stands empty, untouched for decades. A single photograph remains on the floor—six smiling students. One face is missing.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="journal-page">
+        <div class="journal-content">
+            "There were six of us. 
+            Please remember.
+            But was I ever really here?"
+        </div>
+    </div>
+
+    <div class="controls">
+        <label class="control-label">
+            <input type="checkbox" class="control-checkbox" id="ghostEffects">
+            Ghost Effects
+        </label>
+        <label class="control-label">
+            <input type="checkbox" class="control-checkbox" id="mirrorEffects">
+            Mirror Reflections
+        </label>
+        <div class="audio-control">
+            <span>Volume</span>
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-slider" id="volumeControl">
+        </div>
+        <button class="control-button" id="resetButton">Reset</button>
+    </div>
+
+    <button class="knocking-sound" id="knockSound">
+        <span>🔊</span>
+    </button>
+
+    <script>
+        // JavaScript to handle scrolling effects, animations, and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainTitle = document.querySelector('.main-title');
+            const tagline = document.querySelector('.tagline');
+            const sections = document.querySelectorAll('.section');
+            const contentWrappers = document.querySelectorAll('.content-wrapper');
+            const dynamicImages = document.querySelectorAll('.dynamic-image');
+            const backgrounds = document.querySelectorAll('.background');
+            const progressBar = document.querySelector('.progress-bar');
+            const ghostEffectsCheckbox = document.getElementById('ghostEffects');
+            const mirrorEffectsCheckbox = document.getElementById('mirrorEffects');
+            const staticEffect = document.querySelector('.static-effect');
+            const ghost = document.querySelector('.ghost');
+            const knockSound = document.getElementById('knockSound');
+            const volumeControl = document.getElementById('volumeControl');
+            const resetButton = document.getElementById('resetButton');
+            const mirrorEffect = document.querySelector('.mirror-effect');
+            const journalPage = document.querySelector('.journal-page');
+
+            let lastScrollTop = 0;
+            let audio = null;
+            let volume = 0.5;
+
+            // Function to create audio
+            function createAudio() {
+                audio = new Audio('https://freesound.org/data/previews/234/234938_4245784-lq.mp3');
+                audio.volume = volume;
+            }
+
+            // Load ghost images
+            const ghostImages = [
+                'https://images.unsplash.com/photo-1604005954647-4359a8e6ae83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+                'https://images.unsplash.com/photo-1603862015344-afc2f9f9d9a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
+            ];
+
+            // Scroll handler for effects
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.body.scrollHeight - windowHeight;
+                const scrollPercentage = (scrollPosition / documentHeight) * 100;
+
+                // Update progress bar
+                progressBar.style.width = scrollPercentage + '%';
+
+                // Title fade effect
+                if (scrollPosition > windowHeight * 0.5) {
+                    mainTitle.style.opacity = 0;
+                    tagline.style.opacity = 0;
+                } else {
+                    mainTitle.style.opacity = 1 - (scrollPosition / (windowHeight * 0.5));
+                    tagline.style.opacity = 1 - (scrollPosition / (windowHeight * 0.5));
+                }
+
+                // Handle section visibility and effects
+                sections.forEach((section, index) => {
+                    const rect = section.getBoundingClientRect();
+                    const contentWrapper = contentWrappers[index];
+                    const dynamicImage = dynamicImages[index];
+                    const background = backgrounds[index + 1]; // +1 because first background is for title
+
+                    if (rect.top < windowHeight * 0.8 && rect.bottom > 0) {
+                        // Section is visible
+                        if (background) {
+                            background.style.opacity = 1;
+                        }
+                        
+                        if (contentWrapper) {
+                            contentWrapper.style.opacity = 1;
+                            contentWrapper.style.transform = 'translateY(0)';
+                        }
+                        
+                        if (dynamicImage) {
+                            dynamicImage.style.opacity = 1;
+                            dynamicImage.style.transform = 'scale(1)';
+                        }
+                    } else {
+                        // Section is not visible
+                        if (background) {
+                            background.style.opacity = 0;
+                        }
+                        
+                        if (contentWrapper) {
+                            contentWrapper.style.opacity = 0;
+                            contentWrapper.style.transform = 'translateY(50px)';
+                        }
+                        
+                        if (dynamicImage) {
+                            dynamicImage.style.opacity = 0;
+                            dynamicImage.style.transform = 'scale(1.05)';
+                        }
+                    }
+                });
+
+                // Last episode journal effect
+                const lastSection = document.getElementById('episode10');
+                if (lastSection) {
+                    const lastSectionRect = lastSection.getBoundingClientRect();
+                    if (lastSectionRect.top < windowHeight * 0.5 && lastSectionRect.bottom > 0) {
+                        journalPage.style.transform = 'translateX(-50%) translateY(0)';
+                        journalPage.style.opacity = 1;
+                    } else {
+                        journalPage.style.transform = 'translateX(-50%) translateY(100px)';
+                        journalPage.style.opacity = 0;
+                    }
+                }
+
+                // Ghost effects based on scroll direction
+                if (ghostEffectsCheckbox.checked) {
+                    const currentScrollTop = window.scrollY;
+                    if (currentScrollTop > lastScrollTop) {
+                        // Scrolling down
+                        if (Math.random() < 0.01) {
+                            showRandomGhost();
+                        }
+                    } else {
+                        // Scrolling up
+                        if (Math.random() < 0.02) {
+                            flickerStatic();
+                        }
+                    }
+                    lastScrollTop = currentScrollTop;
+                }
+
+                // Mirror effects
+                if (mirrorEffectsCheckbox.checked) {
+                    if (scrollPosition > windowHeight && Math.random() < 0.003) {
+                        showMirrorEffect();
+                    }
+                }
+            });
+
+            // Function to show random ghost
+            function showRandomGhost() {
+                const ghostImg = ghostImages[Math.floor(Math.random() * ghostImages.length)];
+                ghost.style.backgroundImage = `url(${ghostImg})`;
+                ghost.style.top = Math.random() * window.innerHeight + 'px';
+                ghost.style.left = Math.random() * window.innerWidth + 'px';
+                ghost.style.opacity = '0.3';
+                
+                setTimeout(() => {
+                    ghost.style.opacity = '0';
+                }, 500);
+            }
+
+            // Function to flicker static
+            function flickerStatic() {
+                staticEffect.classList.add('flicker');
+                setTimeout(() => {
+                    staticEffect.classList.remove('flicker');
+                }, 500);
+            }
+
+            // Function to show mirror effect
+            function showMirrorEffect() {
+                mirrorEffect.style.opacity = '1';
+                setTimeout(() => {
+                    mirrorEffect.style.opacity = '0';
+                }, 3000);
+            }
+
+            // Knock sound button
+            knockSound.addEventListener('click', function() {
+                if (!audio) {
+                    createAudio();
+                }
+                audio.play();
+                flickerStatic();
+            });
+
+            // Volume control
+            volumeControl.addEventListener('input', function() {
+                volume = this.value;
+                if (audio) {
+                    audio.volume = volume;
+                }
+            });
+
+            // Reset button
+            resetButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Initial load of sections
+            setTimeout(() => {
+                const scrollEvent = new Event('scroll');
+                window.dispatchEvent(scrollEvent);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
+        
