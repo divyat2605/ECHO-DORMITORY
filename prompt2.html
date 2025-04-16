@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ECHO DORMITORY - Some echoes don't fade</title>
+  <meta name="description" content="Explore the mysterious Echo Dormitory where echoes wait to be heard. A narrative-driven immersive experience." />
+  <meta name="keywords" content="Echo Dormitory, mystery, narrative, Akari, Kagura Academy" />
+  <meta name="author" content="Your Name or Organization" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;700&family=Noto+Serif+JP:wght@300;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-color: #0a0a0c;
+      --text-color: #e6e6e8;
+      --accent-color: #596acf;
+      --shadow-color: rgba(89, 106, 207, 0.4);
+      --hover-color: #8796e0;
+      --focus-outline: 2px solid #8796e0;
+    }
+
+    /* Reset and base styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Crimson Pro', serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a:hover, a:focus {
+      color: var(--hover-color);
+      outline: none;
+      text-decoration: underline;
+    }
+
+    /* Navigation bar */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(10, 10, 12, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1100;
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 2px 8px var(--shadow-color);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav li {
+      font-weight: 600;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.1rem;
+    }
+
+    nav a:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: 2px;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      background-color: var(--accent-color);
+      z-index: 1200;
+      box-shadow: 0 0 10px var(--shadow-color);
+      transition: width 0.25s ease-out;
+    }
+
+    /* Title Section */
+    .title-section {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: -1;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    h1.main-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      color: var(--accent-color);
+      text-shadow: 0 0 15px var(--shadow-color);
+      letter-spacing: 2px;
+      margin: 0;
+      user-select: none;
+    }
+
+    .tagline {
+      font-style: italic;
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      color: var(--text-color);
+      opacity: 0.85;
+      margin-top: 0.5rem;
+      user-select: none;
+    }
+
+    /* Sections */
+    .section {
+      min-height: 100vh;
+      padding: 5rem 2rem 4rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .content-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .content-wrapper.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .episode-content {
+      flex: 1;
+      max-width: 50%;
+      padding: 2rem;
+      background-color: rgba(10, 10, 12, 0.75);
+      border: 1px solid var(--accent-color);
+      text-align: left;
+      box-shadow: 0 0 30px var(--shadow-color);
+      backdrop-filter: blur(8px);
+      color: var(--text-color);
+      border-radius: 8px;
+    }
+
+    .episode-number {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-color);
+      margin-bottom: 8px;
+      font-weight: 400;
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    h2 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(1.8rem, 3vw, 2.2rem);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+      text-shadow: 1px 1px 3px var(--shadow-color);
+    }
+
+    p {
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      line-height: 1.7;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+    .auto-scroll-indicator {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(10, 10, 12, 0.8);
+        padding: 10px 15px;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+    }
+
+    .auto-scroll-button {
+        background: var(--accent-color);
+        color: var(--text-color);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .auto-scroll-button.active {
+        background: var(--hover-color);
+        box-shadow: 0 0 15px var(--shadow-color);
+    }
+
+    /* Audio controls */
+    .audio-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(10, 10, 12, 0.8);
+        padding: 10px 15px;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+    }
+
+    .volume-slider {
+        width: 100px;
+        height: 4px;
+        -webkit-appearance: none;
+        background: rgba(230, 230, 232, 0.3);
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        transition: all 0.3s ease;
+    }
+
+    /* Enhanced hover effects */
+    .hover-glow {
+        transition: filter 0.3s ease, transform 0.3s ease;
+    }
+
+    .hover-glow:hover {
+        filter: drop-shadow(0 0 8px var(--shadow-color));
+        transform: translateY(-2px);
+    }
+
+    /* Call to action button */
+    .cta-button {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      font-family: 'Crimson Pro', serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-color);
+      background-color: var(--accent-color);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--shadow-color);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-align: center;
+      user-select: none;
+    }
+
+    .cta-button:hover,
+    .cta-button:focus {
+      background-color: var(--hover-color);
+      outline: none;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px var(--hover-color);
+    }
+
+    /* Episode image */
+    .episode-image {
+      flex: 1;
+      max-width: 45%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      background-color: rgba(10, 10, 12, 0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    .dynamic-image {
+      max-width: 100%;
+      max-height: 60vh;
+      object-fit: cover;
+      border-radius: 8px;
+      filter: grayscale(20%) brightness(90%);
+      transition: filter 0.5s ease, transform 0.5s ease;
+      cursor: pointer;
+    }
+
+    .dynamic-image:hover,
+    .dynamic-image:focus {
+      filter: grayscale(0%) brightness(100%);
+      transform: scale(1.05);
+      outline: none;
+    }
+
+    /* Accessibility focus */
+    .dynamic-image:focus-visible {
+      outline: var(--focus-outline);
+      outline-offset: 3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content-wrapper {
+        flex-direction: column;
+        padding: 0;
+      }
+
+      .episode-content,
+      .episode-image {
+        max-width: 100%;
+        padding: 1rem 0;
+      }
+
+      nav ul {
+        gap: 1rem;
+      }
+
+      nav li {
+        font-size: 1rem;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+
+      .main-title {
+        font-size: 2.5rem;
+      }
+
+      .tagline {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Contact form styles */
+    .contact-section {
+      background-color: rgba(10, 10, 12, 0.85);
+      color: var(--text-color);
+      padding: 3rem 2rem;
+      max-width: 600px;
+      margin: 3rem auto;
+      border-radius: 10px;
+      box-shadow: 0 0 30px var(--shadow-color);
+      font-family: 'Crimson Pro', serif;
+    }
+
+    .contact-section h2 {
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .contact-section form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-section label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .contact-section input,
+    .contact-section textarea {
+      padding: 0.6rem 0.8rem;
+      border-radius: 5px;
+      border: 1px solid var(--accent-color);
+      background-color: rgba(10, 10, 12, 0.6);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+    }
+
+    .contact-section input:focus,
+    .contact-section textarea:focus {
+      outline: none;
+      border-color: var(--hover-color);
+      box-shadow: 0 0 8px var(--hover-color);
+    }
+
+    .contact-section button {
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .contact-section button:hover,
+    .contact-section button:focus {
+      background-color: var(--hover-color);
+      outline: none;
+    }
+
+    /* Visually hidden for screen readers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+    <audio >
+        <source src="song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+
+
+  <nav role="navigation" aria-label="Primary navigation">
+    <ul>
+      <li><a href="#title-section" tabindex="0">Home</a></li>
+      <li><a href="#episode1" tabindex="0">Episode 1</a></li>
+      <li><a href="#episode2" tabindex="0">Episode 2</a></li>
+      <li><a href="#episode3" tabindex="0">Episode 3</a></li>
+      <li><a href="#episode4" tabindex="0">Episode 4</a></li>
+      <li><a href="#episode5" tabindex="0">Episode 5</a></li>
+      <li><a href="#episode6" tabindex="0">Episode 6</a></li>
+      <li><a href="#episode7" tabindex="0">Episode 7</a></li>
+      <li><a href="#episode8" tabindex="0">Episode 8</a></li>
+      <li><a href="#episode9" tabindex="0">Episode 9</a></li>
+      <li><a href="#episode10" tabindex="0">Episode 10</a></li>
+      <li><a href="#journal" tabindex="0">Journal </a></li>
+      <li><a href="#contact" tabindex="0">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="progress-bar" aria-hidden="true"></div>
+
+  <main>
+    
+    <section class="title-section" id="title-section" tabindex="-1" aria-label="Website introduction">
+      <div
+        class="background"
+        style="background-image: url('https://images.unsplash.com/photo-1630699144867-37acec97df5a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80');"
+        aria-hidden="true"
+      ></div>
+      <h1 class="main-title">🌑 ECHO DORMITORY</h1>
+      <p class="tagline">Some echoes don't fade. They wait to be heard.</p>
+      <button class="cta-button" aria-label="Learn more about Echo Dormitory" onclick="document.getElementById('episode1').scrollIntoView({behavior:'smooth'})">Explore the Story</button>
+    </section>
+
+    <section class="section" id="episode1" tabindex="-1" aria-labelledby="ep1-title" aria-describedby="ep1-desc">
+      <div
+        class="background"
+        style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+        aria-hidden="true"
+      ></div>
+      <div class="content-wrapper">
+        <article class="episode-content">
+          <div class="episode-number">Episode 1</div>
+          <h2 id="ep1-title">Arrival</h2>
+          <p id="ep1-desc">
+            Akari transfers to Kagura Academy and is placed in the rarely-used Echo Dormitory. 
+            The building is cold, oddly silent, and the air feels heavier than it should.
+             Her roommate never arrives. That night, she hears a knock from the inside of her closet—twice.
+          </p>
+          <button class="cta-button" aria-label="Read more about Episode 1" onclick="alert('More details coming soon!')">Read More</button>
+        </article>
+        <figure class="episode-image">
+          <img
+            src="episode1.jpg"
+            alt="Exterior view of Echo Dormitory"
+            class="dynamic-image"
+            loading="lazy"
+            tabindex="0"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="episode2" tabindex="-1" aria-labelledby="ep2-title" aria-describedby="ep2-desc">
+      <div
+        class="background"
+        style="background-image: url('https://images.unsplash.com/photo-1536965764833-5971e0abed7c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1935&q=80');"
+        aria-hidden="true"
+      ></div>
+      <div class="content-wrapper">
+        <figure class="episode-image">
+          <img
+            src="episode2.jpeg"
+            alt="Empty dormitory room symbolizing forgotten memories"
+            class="dynamic-image"
+            loading="lazy"
+            tabindex="0"
+          />
+        </figure>
+        <article class="episode-content">
+          <div class="episode-number">Episode 2</div>
+          <h2 id="ep2-title">Names That Vanish</h2>
+          <p id="ep2-desc">
+            She meets other dorm residents: reserved, distracted, and strangely forgetful. A student named Yui shares dinner with them—but the next morning, no one remembers her. Her room is empty. Only Akari remembers… and finds Yui's schoolbook under her own bed.
+          </p>
+          <button class="cta-button" aria-label="Read more about Episode 2" onclick="alert('More details coming soon!')">Read More</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="episode3" tabindex="-1" aria-labelledby="ep3-title" aria-describedby="ep3-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 3</div>
+            <h2 id="ep3-title">Reflections</h2>
+            <p id="ep3-desc">
+                Mirrors start acting strangely—reflecting people who aren’t there, 
+                sometimes lagging behind real movement. Akari glimpses a boy watching her 
+                through the mirror. He vanishes the moment she blinks. Her reflection continues 
+                to smile even when she stops.
+
+
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 3" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode3.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+      <section class="section" id="episode4" tabindex="-1" aria-labelledby="ep4-title" aria-describedby="ep4-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 4</div>
+            <h2 id="ep4-title">Rule of Two</h2>
+            <p id="ep4-desc">
+                Itsuki tells her an old dorm rule: If the knock comes more than twice, don’t open the door. 
+                That night, someone knocks on every door in the hallway—three times. 
+                A student breaks the rule. In the morning, their door is sealed shut. No one remembers them.
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 4" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode4.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode5" tabindex="-1" aria-labelledby="ep5-title" aria-describedby="ep5-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 5</div>
+            <h2 id="ep5-title">Echo Photo</h2>
+            <p id="ep5-desc">
+                Akari finds a yearbook tucked under a loose floorboard. Five students’ faces are scribbled out. In the same place, she uncovers a dusty photo: the current dorm residents, including herself—but there’s one extra person in the picture. A girl no one recognizes. Not even Akari.
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 5" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode5.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode6" tabindex="-1" aria-labelledby="ep6-title" aria-describedby="ep6-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 6</div>
+            <h2 id="ep6-title">The Basement Class</h2>
+            <p id="ep6-desc">
+                Following a distorted map drawn in the back of the yearbook, 
+                Akari and Itsuki find a sealed staircase leading to the old basement. 
+                They discover a forgotten classroom—dusty desks, broken glass, 
+                and lifelike mannequins seated like students. One of them wears Yui’s scarf.
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 6" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode6.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode7" tabindex="-1" aria-labelledby="ep7-title" aria-describedby="ep7-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 7</div>
+            <h2 id="ep1-title">Rewind</h2>
+            <p id="ep1-desc">
+                Sayaka confesses: the dorm resets time. 
+                She’s lived this week seven times and always ends up alone. 
+                Her memories of the outside world are crumbling. 
+                Her last cycle ended with her reflection pulling her through the mirror. 
+                This time, she wants to change the ending.
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 7" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode7.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode8" tabindex="-1" aria-labelledby="ep8-title" aria-describedby="ep8-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 8</div>
+            <h2 id="ep8-title">The Sixth</h2>
+            <p id="ep8-desc">
+                Akari’s visions intensify. Flashbacks return—her younger self, in Echo Dorm, 
+                laughing with five other students. Her mother’s face blurs. 
+                She realizes she’s not new to this dorm. She was the sixth student from the original incident. 
+                But why did she forget?
+
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 8" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode8.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode9" tabindex="-1" aria-labelledby="ep9-title" aria-describedby="ep9-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 9</div>
+            <h2 id="ep1-title">Static Silence</h2>
+            <p id="ep1-desc">
+                Voices in the dorm begin overlapping—whispers from forgotten students calling out. 
+                The building starts to shift: stairs go nowhere, windows show static, and walls bleed old memories. 
+                The Mirror Boy reveals the dorm protects lost souls—those who weren’t remembered. 
+                Akari must choose: leave… or stay and remember them all.
+
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 9" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode9.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="episode10" tabindex="-1" aria-labelledby="ep10-title" aria-describedby="ep10-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Episode 10</div>
+            <h2 id="ep10-title">The Last Echo</h2>
+            <p id="ep10-desc">
+                To escape, Akari must give up her final memory of her real life—her mother’s face. 
+                She stays behind just long enough to speak their names aloud, one last time. 
+                The dorm fades back into silence. 
+                When the staff unlock the building weeks later, only Akari’s journal remains on a desk. 
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 10" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="episode10.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+      <section class="section" id="journal" tabindex="-1" aria-labelledby="journal-title" aria-describedby="journal-desc">
+        <div
+          class="background"
+          style="background-image: url('https://images.unsplash.com/photo-1598902590916-bbc042b39710?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');"
+          aria-hidden="true"
+        ></div>
+        <div class="content-wrapper">
+          <article class="episode-content">
+            <div class="episode-number">Journal</div>
+            <h2 id="ep1-title">Journal</h2>
+            <p id="journal-desc">
+                The front page reads:
+                “There were six of us. Please remember.”
+            </p>
+            <button class="cta-button" aria-label="Read more about Episode 1" onclick="alert('More details coming soon!')">Read More</button>
+          </article>
+          <figure class="episode-image">
+            <img
+              src="journal.jpg"
+              alt="Exterior view of Echo Dormitory"
+              class="dynamic-image"
+              loading="lazy"
+              tabindex="0"
+            />
+          </figure>
+        </div>
+      </section>
+  
+                
+  
+  
+
+    <section class="contact-section" id="contact" tabindex="-1" aria-label="Contact form">
+      <h2>Contact Us</h2>
+      <form id="contact-form" novalidate>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" aria-required="true" required autocomplete="name" />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" aria-required="true" required autocomplete="email" />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" aria-required="true" required></textarea>
+
+        <button type="submit" aria-label="Send message">Send Message</button>
+      </form>
+      <div role="alert" aria-live="polite" class="sr-only" id="form-status"></div>
+    </section>
+    <div class="audio-controls">
+        <button id="audio-toggle" class="hover-glow" aria-label="Toggle background music">
+            ♫
+        </button>
+        <input type="range" id="volume-control" class="volume-slider hover-glow" 
+               min="0" max="1" step="0.1" value="0.5" aria-label="Volume control">
+    </div>
+    
+    <div class="auto-scroll-indicator">
+        <button id="auto-scroll" class="auto-scroll-button hover-glow" aria-label="Toggle auto-scroll">
+            Auto Scroll
+        </button>
+        <div class="scroll-speed-control">
+            <input type="range" id="scroll-speed" class="hover-glow" 
+                   min="1" max="10" value="5" aria-label="Scroll speed control">
+        </div>
+    </div>
+    
+    <!-- Add background audio element -->
+    <audio id="background-audio" loop>
+        <source src="your-background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+  </main>
+
+  <script>
+    
+     // Audio Controls
+     const audio = document.getElementById('background-audio');
+     const audioToggle = document.getElementById('audio-toggle');
+     const volumeControl = document.getElementById('volume-control');
+ 
+     audioToggle.addEventListener('click', () => {
+         if (audio.paused) {
+             audio.play();
+             audioToggle.textContent = '⏸';
+         } else {
+             audio.pause();
+             audioToggle.textContent = '♫';
+         }
+     });
+ 
+     volumeControl.addEventListener('input', (e) => {
+         audio.volume = e.target.value;
+     });
+ 
+     // Auto-scroll Feature
+     let autoScrollInterval;
+     const autoScrollButton = document.getElementById('auto-scroll');
+     const scrollSpeed = document.getElementById('scroll-speed');
+ 
+     function smoothScroll() {
+         const scrollStep = scrollSpeed.value / 2;
+         window.scrollBy({
+             top: scrollStep,
+             behavior: 'smooth'
+         });
+         
+         if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+             stopAutoScroll();
+         }
+     }
+ 
+     function startAutoScroll() {
+         autoScrollInterval = setInterval(smoothScroll, 100);
+         autoScrollButton.classList.add('active');
+     }
+ 
+     function stopAutoScroll() {
+         clearInterval(autoScrollInterval);
+         autoScrollButton.classList.remove('active');
+     }
+ 
+     autoScrollButton.addEventListener('click', () => {
+         if (autoScrollButton.classList.contains('active')) {
+             stopAutoScroll();
+         } else {
+             startAutoScroll();
+         }
+     });
+ 
+     // Pause auto-scroll on user interaction
+     window.addEventListener('wheel', stopAutoScroll);
+     window.addEventListener('touchmove', stopAutoScroll);
+     window.addEventListener('keydown', stopAutoScroll);
+    // Scroll progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      progressBar.style.width = scrollPercent + '%';
+    });
+
+    // Fade-in animation for content-wrapper on scroll
+    const contentWrappers = document.querySelectorAll('.content-wrapper');
+    const observerOptions = {
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    contentWrappers.forEach((wrapper) => observer.observe(wrapper));
+
+    // Contact form validation and submission simulation
+    const form = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Simulate sending message
+      formStatus.textContent = 'Sending message...';
+      setTimeout(() => {
+        formStatus.textContent = 'Thank you for your message! We will get back to you soon.';
+        form.reset();
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
